@@ -9,27 +9,38 @@ const isValidUrl = (url) => {
         return false
 }
 
+const isValid=(value)=>{
+    if(typeof  value ==="undefined" || typeof value ==="null") return false
+    if (typeof value === "string" && value.trim().length === 0) return false;
+    return true
+}
+
 
 const createUrlCode = async function (req, res) {
     try {
         let data = req.body;
-
+        let {longUrl}=data
         if (Object.keys(data).length == 0) {
             return res.status(400).send({ status: false, data: "Body can not be empty" })
         } else {
 
-            if (validUrl.isUri(data.longUrl)) {
-                // let baseUrl="http://localhost:3000/" 
-                 
-                let shortener = await urlCodeModel.create(data);
-                let result = {
-                    longUrl: shortener.longUrl,
-                    shortUrl: shortener.shortUrl,
-                    urlCode: shortener.urlCode
-                }
-                return res.status(201).send({ status: true, data: result })
+            if (isValidUrl(longUrl) && isValid(longUrl)) {
+                let baseUrl="http://localhost:3000" 
+
+                const urlCreation = shortid.generate() // here we are creating short url code
+                const urlCode = urlCreation.trim().toLowerCase() // we are triming here
+                
+                let shortUrl=baseUrl+"/"+urlCode // concatinating short url here
+
+                data["shortUrl"]=shortUrl // adding prop in data object
+                data["urlCode"]=urlCode // adding prop in data object
+                  
+                
+                let urlShortData = await urlCodeModel.create(data);
+            
+                return res.status(201).send({ status: true, data: urlShortData })
             } else {
-            return res.status(400).send({ status: false, data: "Provided url format is wrong " })
+            return res.status(400).send({ status: false, data: "Pliz provide valid and long url format" })
             }
         }
 
@@ -39,4 +50,4 @@ const createUrlCode = async function (req, res) {
 
 }
 
-module.exports = { createUrlCode }
+module.exports = { createUrlCode,isValid,isValidUrl }
