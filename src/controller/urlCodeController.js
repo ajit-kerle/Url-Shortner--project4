@@ -53,37 +53,15 @@ const createUrlCode = async function (req, res) {
 const getUrlCode=async function(req,res){
     try{
         let urlCode=req.params.urlCode
-        let validUrl = shortid.isValid(urlCode)
-        if (!validUrl) {
+
+        if (!shortid.isValid(urlCode)) {
             return res.status(400).send({ status: false, msg: 'url code is not valid' })
         }else{
-        const urlData = await urlCodeModel.findOne({ urlCode: urlCode })
+        const urlData = await urlCodeModel.findOne({ urlCode: urlCode },{urlCode:1,shortUrl:1,longUrl:1,_id:0})
         return res.status(201).send({ status: true, data: urlData })
         }
     }catch{
     res.status(500).send({ status: false, error: error.message })
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 module.exports = { createUrlCode,isValid,isValidUrl , getUrlCode}
