@@ -21,7 +21,7 @@ const createUrlCode = async function (req, res) {
         let data = req.body;
         let {longUrl}=data
         if (Object.keys(data).length == 0) {
-            return res.status(400).send({ status: false, data: "Body can not be empty" })
+            return res.status(400).send({ status: false, message: "Body can not be empty" })
         } else {
 
             if (isValidUrl(longUrl) && isValid(longUrl)) {
@@ -40,7 +40,7 @@ const createUrlCode = async function (req, res) {
             
                 return res.status(201).send({ status: true, data: urlShortData })
             } else {
-            return res.status(400).send({ status: false, data: "Pliz provide valid and long url format" })
+            return res.status(400).send({ status: false, message: "Pliz provide valid and long url format" })
             }
         }
 
@@ -50,4 +50,40 @@ const createUrlCode = async function (req, res) {
 
 }
 
-module.exports = { createUrlCode,isValid,isValidUrl }
+const getUrlCode=async function(req,res){
+    try{
+        let urlCode=req.params.urlCode
+        let validUrl = shortid.isValid(urlCode)
+        if (!validUrl) {
+            return res.status(400).send({ status: false, msg: 'url code is not valid' })
+        }else{
+        const urlData = await urlCodeModel.findOne({ urlCode: urlCode })
+        return res.status(201).send({ status: true, data: urlData })
+        }
+    }catch{
+    res.status(500).send({ status: false, error: error.message })
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+module.exports = { createUrlCode,isValid,isValidUrl , getUrlCode}
