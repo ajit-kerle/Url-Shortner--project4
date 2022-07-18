@@ -2,6 +2,12 @@ const urlCodeModel = require('../model/urlCodeModel');
 const validUrl = require('valid-url');
 const shortid = require('shortid')
 
+const isValidUrl = (url) => {
+    if (/(ftp|http|https|FTP|HTTP|HTTPS):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-/]))?/.test(url.trim()))
+        return true
+    else
+        return false
+}
 const createUrlCode = async function(req,res){
         try{
             let data = req.body;
