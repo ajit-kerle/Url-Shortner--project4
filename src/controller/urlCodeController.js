@@ -73,9 +73,10 @@ const createUrlCode = async function (req, res) {
 };
 
 const getUrlCode = async function (req, res) {
-    try {
+    try {                
         let urlCode = req.params.urlCode;
         if (!shortid.isValid(urlCode)) return res.status(400).send({ status: false, msg: "invalid urlCode" })
+        
         let cacheUrl = await GET_ASYNC(`${urlCode}`);
         if (cacheUrl) return res.status(302).redirect(`${cacheUrl}`);
         let findUrl = await urlCodeModel.findOne({ urlCode: urlCode });
