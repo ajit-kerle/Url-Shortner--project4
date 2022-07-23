@@ -1,5 +1,6 @@
 const shortid = require("shortid");
 const urlCodeModel = require("../model/urlCodeModel");
+
 const redis = require("redis");
 
 const { promisify } = require("util");
@@ -35,6 +36,7 @@ const createUrlCode = async function (req, res) {
         let longUrl = data.longUrl;
         if (Object.keys(data).length == 0) return res.status(400).send({ status: false, message: "Enter a valid input in body" });
         if (!longUrl) return res.status(400).send({ status: false, message: "Enter a valid longUrl" });
+
         if (!/^(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})?$/.test(longUrl))
             return res.status(400).send({ status: false, message: `'${longUrl}' is not a valid URL` });
 
@@ -50,6 +52,7 @@ const createUrlCode = async function (req, res) {
 
         //creating urlCode              
         let shortId = shortid.generate().toLowerCase();
+
         let shortidExist = await urlCodeModel.findOne({ urlCode: shortId })
         if (shortidExist) return res.status(200).send({ status: true, data: shortidExist })
         // //checking if urlCode is unique and has only lower case letters 
@@ -88,4 +91,5 @@ const getUrlCode = async function (req, res) {
         res.status(500).send({ status: false, error: err.message })
     }
 }
+
 module.exports = { createUrlCode, getUrlCode }
